@@ -1,0 +1,95 @@
+---
+title: "portfolio 9"
+output: html_document
+date: "2023-04-21"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readxl)
+library(ggplot2)
+library(dplyr)
+df <- read_excel("/Users/lindsaystall/Downloads/PIRUS_Public_May2020.xlsx")
+df[df == -99 | df == -88] <- NA
+```
+
+```{r}
+ggplot(data = df, aes(x = Age)) +
+  geom_histogram(binwidth = 5, color = "black", fill = "orchid4") +
+  labs(title = "Distribution of Age", x = "Age", y = "Frequency")
+```
+
+The mode age is around 25.
+
+```{r}
+marital_counts <- data.frame(table(df$Marital_Status))
+
+ggplot(marital_counts, aes(x = Var1, y = Freq)) +
+  geom_bar(stat = "identity", fill = "pink2") +
+  xlab("Marital Status") +
+  ylab("Frequency") +
+  ggtitle("Distribution of Marital Status")
+```
+
+1 = Single (never married)
+2 = Married (religious or civil marriage qualifies) 
+3 = Divorced or Separated
+4 = Widowed
+
+The terrorists in this dataset are very often single. I wonder why??????????
+
+
+```{r}
+gender_count <- data.frame(count = c(42, 194), gender = c("Female", "Male"))
+
+ggplot(gender_count, aes(x = "", y = count, fill = gender)) +
+  geom_bar(stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  scale_fill_manual(values = c("mediumspringgreen", "hotpink1")) +
+  theme_void() +
+  labs(fill = "Gender")
+```
+
+The vast majority of the terrorists were men, but I'm honestly surprised to see that many female terrorists represented...
+
+```{r}
+percent_female <- mean(df$Gender == 1, na.rm = TRUE) * 100
+cat(paste0("Percentage of females: ", round(percent_female, 1), "%\n"))
+```
+
+Around 10% of the terrorists were women.
+
+```{r}
+female_data <- subset(df, Gender == 1)
+
+ggplot(female_data, aes(x = Radical_Signif_Other, fill = factor(Radical_Signif_Other))) +
+  geom_bar() +
+  xlab("Radical Significant Other") +
+  ylab("Count") +
+  ggtitle("Radical Significant Other for Female Terrorist") +
+  scale_fill_discrete(name = "Radical Significant Other", 
+                      labels = c("No or Single", "Legal Activities Only", 
+                                 "Non-Violent Illegal Activities Only", 
+                                 "Extremist Violence"))
+```
+
+Women who engaged in terrorist violence were very often in a relationship with another individual engaged in extremeist violence.
+
+
+```{r}
+male_data <- subset(df, Gender == 2)
+
+ggplot(male_data, aes(x = Radical_Signif_Other, fill = factor(Radical_Signif_Other))) +
+  geom_bar() +
+  xlab("Radical Significant Other") +
+  ylab("Count") +
+  ggtitle("Radical Significant Other for Male Terrorists") +
+  scale_fill_discrete(name = "Radical Significant Other", 
+                      labels = c("No or Single", "Legal Activities Only", 
+                                 "Non-Violent Illegal Activities Only", 
+                                 "Extremist Violence"))
+```
+
+Male terrorists by an large were single or dating someone not engaged in terorism.
+
